@@ -342,6 +342,35 @@ def haversine(df):
         gap = ""
     return gap
 
+def haversine2(lat1,lon1,lat2=None,lon2=None,source=None):
+    """
+    Calculate the great circle distance between two points
+    on the earth (specified in decimal degrees)
+    """
+
+    try:
+        lat1 = pd.to_numeric(lat1, errors='coerce')
+        lon1 = pd.to_numeric(lon1, errors='coerce')
+
+        if source == '1012':
+            lat2 = 16.442861
+            lon2 = 102.796558
+        else:
+            lat2 = pd.to_numeric(lat2, errors='coerce')
+            lon2 = pd.to_numeric(lon2, errors='coerce')
+        # convert decimal degrees to radians
+        lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+        # haversine formula
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * asin(sqrt(a))
+        # Radius of earth in kilometers is 6371
+        gap = 6371* c
+
+    except:
+        gap = ""
+    return gap
 # Start calculate
 
 start = time.time()
