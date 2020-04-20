@@ -16,7 +16,7 @@ from math import radians, cos, sin, asin, sqrt, atan2
 #from geopy import distance
 
 freight_users=['ttuntiwi','ajintana','jtraisor','naridbua','asrangsr','prodwini','nauetavo','InstallWin7','InstallWin10','tleelaha','pkornbon' ,'csajjanu','gjuntnap']
-freight_columns=['IO Log region group','Existing Order Alloc Cost','Estimated Frieght Cost' 
+freight_columns=['IO Log region group','Existing Order Alloc Cost','Estimated Frieght Cost'
                  ,'SuggestFreightCost','FinalFreightCost','billing_date','netweight_qty','swap_file','swap_cost'
                 ,'basefreight_otm','accessorial_otm','labor_otm','cost_detail' ]
 freight_columns2=['ORDER_RELEASE_LINE','BaseFreight_TripFreight','accessorial','labor','BahtPerTon','SOURCE_DATA']
@@ -24,9 +24,9 @@ freight_columns2=['ORDER_RELEASE_LINE','BaseFreight_TripFreight','accessorial','
 def store_var(store_name=''):
     x=None
     if store_name.lower() in 'search_master':
-        x={'table':'','doc_no':'','doc_name':'','DateFrom1':'','DateTo1':''}    
+        x={'table':'','doc_no':'','doc_name':'','DateFrom1':'','DateTo1':''}
     elif store_name.lower() in 'validate_shipment_cost':
-        x={'LogConfirmPOD_DateFrom':'' ,'LogConfirmPOD_DateTo':''}    
+        x={'LogConfirmPOD_DateFrom':'' ,'LogConfirmPOD_DateTo':''}
     elif store_name.lower()[:16] in 'search_shipment_report':
         x={'WO_DateFrom':'','WO_DateTo':''
              ,'PreDOCreate_DateFrom':''   ,'PreDOCreate_DateTo':''
@@ -42,11 +42,11 @@ def store_var(store_name=''):
              ,'ShippingCondition':'','ShippingType':''
              ,'LogRegionGroup':''   ,'LogRegionCode':'','IOLogRegionGroup':''
              ,'TZoneDescription':'' ,'ProvinceDescription':''
-             ,'BHIndex':''          
+             ,'BHIndex':''
              ,'SoldToCode':''       ,'SoldToName':''
              ,'ShipToCode':''       ,'ShipToName':''
-             ,'LogMatGroup':''      
-             ,'Plant':'' ,'ShippingPoint':'' 
+             ,'LogMatGroup':''
+             ,'Plant':'' ,'ShippingPoint':''
              ,'Material':''         ,'MatDescription':''
              ,'TruckID':''          ,'Driver':''
              ,'TransporterCode':''  ,'TransporterName':''
@@ -54,13 +54,13 @@ def store_var(store_name=''):
              ,'Division':''         ,'SalesOrg':''
              ,'mark_code':''
              ,'ilm_DateFrom':''     ,'ilm_DateTo':''
-             ,'gps_result':''       ,'ontime':'' 
-             ,'Is_byShipment':''    
-             ,'GroupBy_Sum':'' ,'GroupBy_Rows':'' ,'GroupBy_Columns':''}   
-    
+             ,'gps_result':''       ,'ontime':''
+             ,'Is_byShipment':''
+             ,'GroupBy_Sum':'' ,'GroupBy_Rows':'' ,'GroupBy_Columns':''}
+
     elif store_name.lower() in 'search_orders_visibility':
         x = {'option':'','WO_DateFrom':'','WO_DateTo':''}
-    
+
     else: print('No variable to execute')
     return x
 
@@ -72,7 +72,7 @@ def store_query(store_name='',sql_var=None,is_print_query=True): #if no paremete
         x+="@table=?        ,@doc_no=?       ,@doc_name=? \n"
         x+=",@DateFrom1=?   ,@DateTo1=? \n"
     elif store_name.lower()=='validate_shipment_cost':
-        x='{call dbo.'+store_name+'(@LogConfirmTo_DateFrom=?,@LogConfirmTo_DateTo=?)}' #ODBC format cannot get output param   
+        x='{call dbo.'+store_name+'(@LogConfirmTo_DateFrom=?,@LogConfirmTo_DateTo=?)}' #ODBC format cannot get output param
     elif store_name.lower()=='search_shipment_report':
         x="DECLARE @out nvarchar(max); \n"
         #="{call dbo.SEARCH(@var1=?,@var2=?)}" #ODBC format cannot get output parameters
@@ -96,7 +96,7 @@ def store_query(store_name='',sql_var=None,is_print_query=True): #if no paremete
         x+=",@ShipToCode=?             ,@ShipToName=? \n"
         x+=",@LogMatGroup=? \n"
         x+=",@Plant=?                  ,@ShippingPoint=? \n"
-        x+=",@Material=?               ,@MatDescription=? \n" 
+        x+=",@Material=?               ,@MatDescription=? \n"
         x+=",@TruckID=?                ,@Driver=? \n"
         x+=",@TransporterCode=?        ,@TransporterName=? \n"
         x+=",@ConditionGroup5=?        ,@AssignUser=? \n"
@@ -117,12 +117,12 @@ def store_query(store_name='',sql_var=None,is_print_query=True): #if no paremete
         x+=",@plant=?       ,@rank=?"
         if store_name.lower()=='kfa_select_data': y='SCCCLogistic'
         else: y='SCCC_Tracking'
-    
+
     elif store_name.lower()=='search_orders_visibility':
         #x="DECLARE @out nvarchar(max); \n"
         x+='EXEC dbo.'+store_name+' \n'
         x+="@option =? ,@WO_DateFrom=?      ,@WO_DateTo=? \n"
-    
+
         #x+=",@param_out=@out OUTPUT; \n"\
         #    "SELECT @out AS the_output;\n"
     else: print('Store procedure has no variable '+store_name)
@@ -138,17 +138,17 @@ def sql_execute_query(db_name,query,sql_var=None,is_print_query=False): #if no p
     conn=connectDB(db_name)#.connect()
     cursor=conn.cursor()
     if params is None : rows=cursor.execute(query).fetchall()
-    else : 
+    else :
         #print(query,params)
         rows=cursor.execute(query,params).fetchall() #SQL Server format-->#while rows: print(rows)
         query=check_sql_string(query,params)
-        
+
     if is_print_query: print("------Execute query----- \n",query)
     #-------------------------------------
     columns=[column[0] for column in cursor.description] #must before move cursor
     df=pd.DataFrame.from_records(rows,columns=columns) #df=pd.read_sql(sql=query,con=conn,params=params)
-    
-    if is_print_query and cursor.nextset() : 
+
+    if is_print_query and cursor.nextset() :
         try: print('------Query -----',cursor.fetchall()[0][0])
         except Exception as e: print('error when print query',e)
     cursor.close()
@@ -189,7 +189,7 @@ def get_db_params(db_name):
                         ,'password'  : 'sccc_tracking'
                         ,'host'      : '210.1.60.112,1433'
                         ,'database'  : db_name
-                        ,'driver'    : 'SQL Server'}  
+                        ,'driver'    : 'SQL Server'}
     return credentials
 
 
@@ -209,16 +209,16 @@ def filter_columns(df):
     return df[col_list]
 
 def SearchOrderVisibility(woDate):
-    
-    """ 
+
+    """
     Create dataframe using seach order visibity query from SCCC data warehouse by WoDate and day minus
     select only GPS equal to 0, start extracting from woDate minus 90 days
-    
+
     """
-    
+
     store_name='search_orders_visibility'
     var=store_var(store_name)
-    
+
     woDate = pd.to_datetime(woDate)
     woDateTo = woDate
     woDateFrom = woDateTo - datetime.timedelta(90)
@@ -228,29 +228,29 @@ def SearchOrderVisibility(woDate):
     dbname,query=store_query(store_name)
     df=sql_execute_query(dbname,query,var,True)
     df = df[df['gps']==0]
-    
+
     df['wo_date_from'] = pd.to_datetime(df['wo_date_from'],format ='%d/%m/%Y')
     df['wo_date_to'] = pd.to_datetime(df['wo_date_to'],format ='%d/%m/%Y')
-    
+
     return df
 
 def FindTruckIDAndShipment(woDate,ShipToCode):
-    
-    """ 
-    Find TruckID by put in woDate and ShipToCode, look for data from OTM datawarehouse
-    
+
     """
-    
+    Find TruckID by put in woDate and ShipToCode, look for data from OTM datawarehouse
+
+    """
+
     dbname='SCCC Data Warehouse'
-    
+
     woDate = pd.to_datetime(woDate)
-    
+
     # plus one hours
     woDateTo = woDate + datetime.timedelta(2)
 
     query =  "SELECT * FROM ShipmentTracking WHERE [Weight Out Date by SH] between '"         + woDate.strftime('%Y-%m-%d %H:%M:%S')+"'" "and'"+ woDateTo.strftime('%Y-%m-%d %H:%M:%S')+"'        AND [ShipToCode] ='"+ShipToCode+"'" "and [Shipping Condition] like ('D%')"
 
-    try: 
+    try:
         df =sql_execute_query(dbname,query,None,True)
         df = df[['ShipmentID','Transportation Zone','SoldToCode','SoldToName','ShipToCode','ShipToName','Truck ID','Weight Out Date by SH','ShippingPoint']]
     except:
@@ -258,13 +258,13 @@ def FindTruckIDAndShipment(woDate,ShipToCode):
     return df[0:1]
 
 def CreateDfTracklog(License,woDate,dayPlus):
-    
-    """ 
+
+    """
     Create dataframe of GPS tracklog by input shipment number, truck license, woDate, and dateplus
     Select related columns and count frequency of GPS lat Lon wiht Tzone in four figures.
-    
+
     """
-    
+
     def TambonID():
         """ Call Tambon master"""
         dbname='SCCC Data Warehouse'
@@ -278,36 +278,38 @@ def CreateDfTracklog(License,woDate,dayPlus):
         df['AM_ID'] = df['AM_ID'].apply(str)
         df['AM_ID'] = df['AM_ID'].str.split(".").str[0]
 
+        df.drop_duplicates(inplace = True)
+
         return df
-    
-    
+
+
     dbname='SCCCLogisticsDataWarehouse'
     woDate = pd.to_datetime(woDate)
     wo_dateFrom = woDate
     wo_dateTo = wo_dateFrom + datetime.timedelta(dayPlus)
-    
-    query =  "SELECT * FROM Tracklocations WHERE [datetime] between'"            + wo_dateFrom.strftime('%Y-%m-%d') +"'and '" + wo_dateTo.strftime('%Y-%m-%d') +"'            AND [License] ='"+License+"'"
+
+    query =  "SELECT * FROM Tracklocations WHERE [datetime] between'" + wo_dateFrom.strftime('%Y-%m-%d') +"'and '" + wo_dateTo.strftime('%Y-%m-%d') +"'            AND [License] ='"+License+"'"
 
     df=sql_execute_query(dbname,query,None,True)
-    
+
     cols = ['Latitude', 'Longtitude','Province','City','Town','GPSRefId']
-    
+
     df = df[cols]
-    
+
     df = df.pivot_table(values = 'GPSRefId',index = ['Latitude', 'Longtitude','Province','City','Town'],aggfunc = 'count').reset_index()
-    
+
     df.rename(columns = {'GPSRefId': 'Freq'},inplace = True)
-    
+
     df['Latitude'] = df['Latitude'].apply(str)
     df['Longtitude'] = df['Longtitude'].apply(str)
-    
+
     dfT = TambonID()
-    
+
     df = df.merge(dfT,how = 'left',left_on = ['Province','City'], right_on = ['CHANGWAT_E','AMPHOE_E'])
-    
+
     return df
 
-def DistanceGapKM(df): 
+def DistanceGapKM(df):
     try:
         cor1 = (df['Latitude'],df['Longtitude'])
         cor2 = (df['LAT'],df['LON'])
@@ -315,10 +317,10 @@ def DistanceGapKM(df):
     except:
         gap = ""
     return gap
-    
+
 def haversine(df):
     """
-    Calculate the great circle distance between two points 
+    Calculate the great circle distance between two points
     on the earth (specified in decimal degrees)
     """
     try:
@@ -326,16 +328,16 @@ def haversine(df):
         lon1 = pd.to_numeric(df['Longtitude'], errors='coerce')
         lat2 = pd.to_numeric(df['LAT'], errors='coerce')
         lon2 = pd.to_numeric(df['LON'], errors='coerce')
-        # convert decimal degrees to radians 
+        # convert decimal degrees to radians
         lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-        # haversine formula 
-        dlon = lon2 - lon1 
-        dlat = lat2 - lat1 
+        # haversine formula
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
         a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-        c = 2 * asin(sqrt(a)) 
+        c = 2 * asin(sqrt(a))
         # Radius of earth in kilometers is 6371
         gap = 6371* c
-        
+
     except:
         gap = ""
     return gap
@@ -346,7 +348,7 @@ start = time.time()
 
 today = pd.to_datetime('today') # find information from previous day
 
-yesterday = today - datetime.timedelta(1) # Find shipto cann't close from yesterday minus 30 days 
+yesterday = today - datetime.timedelta(1) # Find shipto cann't close from yesterday minus 30 days
 
 
 # Find truckID and shipment
@@ -354,8 +356,8 @@ df = SearchOrderVisibility(yesterday)
 
 # seletct start-end range by select yesterday and two day before yesterday.
 
-start_range = today - datetime.timedelta(3) 
-end_range = today - datetime.timedelta(1) 
+start_range = today - datetime.timedelta(3)
+end_range = today - datetime.timedelta(1)
 
 criteria = (df['wo_date_to'] >= start_range) & (df['wo_date_to']<= end_range)
 
@@ -366,19 +368,19 @@ dfFinal = pd.DataFrame()
 
 for i in range(0,len(df)):
     dfF = FindTruckIDAndShipment(df.iloc[i]['wo_date_to'],df.iloc[i]['ShipToCode'])
-    
-    try:   
+
+    try:
         tzone = dfF.iloc[0]['Transportation Zone']
-        shID = dfF.iloc[0]['ShipmentID'] 
-        
+        shID = dfF.iloc[0]['ShipmentID']
+
     except:
         tzone = ""
         shID = "NotFound"+ str(df.iloc[i]['ShipToCode'])
-    
+
     try:
-       
+
         dfS = CreateDfTracklog(dfF.iloc[0]['Truck ID'],dfF.iloc[0]['Weight Out Date by SH'],2)
-        
+
         # Filter only tzone match wiht GPS location
 
         dfS = dfS[dfS['AM_ID']==tzone]
@@ -394,7 +396,7 @@ for i in range(0,len(df)):
 
 #dfFinal.drop(['CHANGWAT_E','AMPHOE_E','AM_ID'],axis =1,inplace = True)
 dfFinal = dfFinal[(dfFinal['ShippingPoint'] =='S41D') | (dfFinal['ShippingPoint']=='S44D')]
-        
+
 cols = ['ShipmentID','ShippingPoint','SoldToCode', 'SoldToName', 'ShipToCode', 'ShipToName','Province', 'City', 'Town','Transportation Zone','Truck ID','Weight Out Date by SH','LAT','LON','Latitude', 'Longtitude','Lat+Lon','Freq']
 
 dfFinal = dfFinal[cols]
@@ -428,7 +430,7 @@ html="""<html>
         <br><br>Regards
         <br>SCCC Logistics
         </p></body></html>"""
-href='<a href="'+path_file+'"> Click </a>'  
+href='<a href="'+path_file+'"> Click </a>'
 html=html.format(href=href) #wb=excel.Workbooks.Open(excel_path) ws=wb.Worksheets(1) ws.Range("A1:B2").Copy() wb.Close()
 maildict={}
 maildict['msg_html']=html
@@ -446,7 +448,3 @@ ctypes.windll.user32.MessageBoxW(0, "Complete calculation !!!", "Information", 1
 
 
 # In[ ]:
-
-
-
-
